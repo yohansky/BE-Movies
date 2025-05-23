@@ -20,24 +20,27 @@ func (app *application) getOneMovie(w http.ResponseWriter, r *http.Request) {
 
 	app.logger.Println("Fetching movie with ID:", id)
 
-	movie, err := app.models.DB.GetMovie(id)
-
-	// movie := models.Movie{
-	// 	ID:          id,
-	// 	Title:       "Inception",
-	// 	Description: "A mind-bending thriller",
-	// 	Year:        2010,
-	// 	ReleaseDate: time.Date(2010, 7, 16, 0, 0, 0, 0, time.Local),
-	// 	Runtime:     148,
-	// 	Rating:      5,
-	// 	MPAARating:  "PG-13",
-	// 	CreatedAt:   time.Now(),
-	// 	UpdatedAt:   time.Now(),
-	// }
+	movie, _ := app.models.DB.GetMovie(id)
 
 	err = app.writeJSON(w, http.StatusOK, movie, "movie")
+	if err != nil {
+		app.errorJSON(w, err)
+		return
+	}
 }
 
 func (app *application) getAllMovie(w http.ResponseWriter, r *http.Request) {
+	movies, err := app.models.DB.All()
+	if err != nil {
+		app.errorJSON(w, err)
+		return
+	}
 
+	err = app.writeJSON(w, http.StatusOK, movies, "movies")
+	if err != nil {
+		app.errorJSON(w, err)
+		return
+	}
+
+	app.logger.Println("Fetched all movies")
 }
